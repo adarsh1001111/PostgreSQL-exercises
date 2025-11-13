@@ -1,26 +1,26 @@
-DROP TABLE IF EXISTS Tastes, Locations, Sandwiches;
+DROP TABLE IF EXISTS TASTES, LOCATIONS, SANDWICHES;
 
-CREATE TABLE Tastes(
+CREATE TABLE TASTES(
     name VARCHAR(10),
     filling VARCHAR(20),
     PRIMARY KEY(name, filling)
 );
 
-CREATE TABLE Locations(
+CREATE TABLE LOCATIONS(
     lname VARCHAR(20) PRIMARY KEY,
     phone NUMERIC,
     address TEXT
 );
 
-CREATE TABLE Sandwiches(
-    location VARCHAR(20) REFERENCES Locations(lname),
+CREATE TABLE SANDWICHES(
+    location VARCHAR(20) REFERENCES LOCATIONS(lname),
     bread VARCHAR(10),
     filling VARCHAR(20),
     price DECIMAL,
     PRIMARY KEY(location, bread, filling)
 );
 
-INSERT INTO Tastes VALUES
+INSERT INTO TASTES VALUES
   ('Brown', 'Turkey'),
   ('Brown', 'Beef'),
   ('Brown', 'Ham'),
@@ -29,13 +29,13 @@ INSERT INTO Tastes VALUES
   ('Green', 'Turkey'),
   ('Green', 'Cheese');
 
-INSERT INTO Locations VALUES
+INSERT INTO LOCATIONS VALUES
   ('Lincoln', 6834523, 'Lincoln Place'),
   ('O''Neill''s', 6742134, 'Pearse St'),
   ('Old Nag', 7678132, 'Dame St'),
   ('Buttery', 7023421, 'College St');
 
-INSERT INTO Sandwiches VALUES
+INSERT INTO SANDWICHES VALUES
   ('Lincoln', 'Rye', 'Ham', 1.25),
   ('O''Neill''s', 'White', 'Cheese', 1.20),
   ('O''Neill''s', 'Whole', 'Ham', 1.25),
@@ -47,26 +47,18 @@ INSERT INTO Sandwiches VALUES
   ('Lincoln', 'White', 'Ham', 1.30),
   ('Old Nag', 'Rye', 'Ham', 1.40);
 
-SELECT *
-  FROM Locations
-    WHERE lname IN (
-        SELECT location
-          FROM Sandwiches
-            WHERE filling IN (
-                SELECT filling
-                  FROM Tastes
-                    WHERE name = 'Jones'
-            )
-    );
+SELECT location
+FROM SANDWICHES
+WHERE filling IN (
+  SELECT filling
+  FROM Tastes
+  WHERE name = 'Jones'
+);
 
-SELECT l.*
-  FROM (Tastes NATURAL JOIN Sandwiches) AS s
-    JOIN Locations l ON l.lname = s.location AND
-      s.name = 'Jones';
+SELECT location
+FROM TASTES NATURAL JOIN SANDWICHES
+WHERE name = 'Jones';
 
-SELECT temp.lname, COUNT(DISTINCT temp.name)
-  FROM (Locations l LEFT JOIN
-    (Tastes NATURAL JOIN Sandwiches) temp1 ON
-    l.lname = temp1.location
-    ) temp
-  GROUP BY temp.lname;
+SELECT location,COUNT(DISTINCT name)
+FROM (TASTES NATURAL JOIN SANDWICHES)
+GROUP BY location;
