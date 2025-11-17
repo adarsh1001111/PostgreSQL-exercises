@@ -83,7 +83,12 @@ does not have more than one comment by the same user
 ( do this using left join and group by )
 */
 
-SELECT a.* FROM articles a LEFT JOIN comments c
-    ON a.id = c.article_id
-GROUP BY a.id
-HAVING COUNT(c.id)<=1;
+SELECT *
+FROM articles
+WHERE id NOT IN (
+    SELECT a.id
+    FROM (articles a 
+    LEFT JOIN comments c
+        ON a.id = c.article_id)
+    GROUP BY a.id,c.user_id
+    HAVING COUNT(*)>1);
