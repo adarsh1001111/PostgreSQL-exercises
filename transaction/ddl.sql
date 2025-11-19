@@ -13,6 +13,7 @@ CREATE TABLE accounts(
     id SERIAL PRIMARY KEY,
     account_number NUMERIC UNIQUE NOT NULL,
     balance DECIMAL NOT NULL DEFAULT 0.0
+    CHECK (balance >= 0.0)
 );
 
 CREATE TABLE users(
