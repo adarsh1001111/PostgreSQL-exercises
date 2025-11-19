@@ -37,6 +37,8 @@ HAVING COUNT(a.project_id) >= 3;
 -- Find the employee who has done most no of projects in android
 -- (do this using variable also).
 
+-- without variable
+
 WITH tb1 AS (
     SELECT a.emp_id, COUNT(a.id) AS c
     FROM
@@ -48,4 +50,26 @@ GROUP BY emp_id
 SELECT emp_id, c
 FROM tb1
 WHERE c = (SELECT MAX(c) FROM tb1);
+
+-- with variable
+
+-- using variable ( will work on psql cmd line)
+
+-- \set technology_name 'Android'
+
+/*
+
+WITH tb1 AS (
+    SELECT a.emp_id, COUNT(a.id) AS c
+    FROM
+    technologies t JOIN assigns a
+    ON t.project_id = a.project_id
+WHERE t.name : 'technology_name'
+GROUP BY emp_id
+)
+SELECT emp_id, c
+FROM tb1
+WHERE c = (SELECT MAX(c) FROM tb1);
+
+*/
 ----------------------------------------------
