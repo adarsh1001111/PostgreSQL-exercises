@@ -7,7 +7,7 @@ Connect to company database
 \c company;
 */
 
-DROP TABLE IF EXISTS employees, projects, assigns, technologies CASCADE;
+DROP TABLE IF EXISTS employees, projects, assigns, technologies;
 
 CREATE TABLE employees (
     id SERIAL PRIMARY KEY,
@@ -20,16 +20,16 @@ CREATE TABLE projects (
 );
 
 CREATE TABLE technologies (
+    id SERIAL PRIMARY KEY,
     name text NOT NULL,
     project_id INT REFERENCES projects ON DELETE CASCADE,
-    PRIMARY KEY (project_id, name)
+    UNIQUE(name, project_id)
 );
 
-CREATE TYPE work_status AS ENUM ('completed', 'ongoing');
-
-CREATE TABLE Enrollments (
+CREATE TABLE assigns (
     id SERIAL PRIMARY KEY,
-    emp_id INT REFERENCES Employees(id) ON DELETE CASCADE,
-    project_id INT REFERENCES Projects(id) ON DELETE CASCADE,
-    status work_status
+    emp_id INT REFERENCES employees ON DELETE CASCADE,
+    project_id INT REFERENCES projects ON DELETE CASCADE,
+    type text CHECK (type IN ('current', 'finished')),
+    UNIQUE(emp_id, project_id)
 );
