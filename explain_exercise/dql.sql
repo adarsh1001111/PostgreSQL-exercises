@@ -160,3 +160,6 @@ Query Planner first does the InitPlan 1( the inner subquery ) using the Index On
 on index condition id=100, then it does the outer query using sequential scan because the no. of rows returned might be less so 
 query planner decided to take the path of sequential scan on comments instead off the index we made on it.
 */
+
+-- Also both queries took almost same cost also subquery one won with very little difference but that depends on the data and its features.
+-- generally JOIN is considered better for queries over subquery .
