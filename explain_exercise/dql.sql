@@ -120,22 +120,43 @@ EXPLAIN SELECT *
 
 ------------------------------------------------------------------------------------------------------------------
 -- 4.)
-
-EXPLAIN SELECT * FROM comments c
-        JOIN users u
-        ON c.user_id = u.id;
+EXPLAIN SELECT C.* FROM comments c
+            JOIN users u
+            ON c.user_id = u.id AND u.id = 100;
 
 /*
-                               QUERY PLAN
-------------------------------------------------------------------------
- Hash Join  (cost=28.50..248.86 rows=10000 width=54)
-   Hash Cond: (c.user_id = u.id)
-   ->  Seq Scan on comments c  (cost=0.00..194.00 rows=10000 width=42)
-   ->  Hash  (cost=16.00..16.00 rows=1000 width=12)
-         ->  Seq Scan on users u  (cost=0.00..16.00 rows=1000 width=12)
+                                     QUERY PLAN
+-------------------------------------------------------------------------------------
+ Nested Loop  (cost=0.28..227.38 rows=9 width=42)
+   ->  Index Only Scan using users_pkey on users u  (cost=0.28..8.29 rows=1 width=4)
+         Index Cond: (id = 100)
+   ->  Seq Scan on comments c  (cost=0.00..219.00 rows=9 width=42)
+         Filter: (user_id = 100)
 (5 rows)
 
-Query planner first iterates through smaller table, i.e. users, and creates hash corresponding to hash condition. It then sequentially reads all rows in comments table.
-Joins the tables on the basis of hash condition.
--- they are not using indexes and using sequential scan beacuse query planner thought it is cheaper than index-scan.
+Query Planner uses nested loop for joining the both ( for users table uses the primary key index to search id = 100  )
+then for the found u.id = 100 does a sequential scan on comments table to see which row's user_id matches the u.id i.e. 100.
+
+*/
+
+EXPLAIN SELECT *
+FROM comments
+WHERE user_id = (
+    SELECT id
+    FROM users
+    WHERE id = 100
+);
+/*
+                                     QUERY PLAN
+-------------------------------------------------------------------------------------
+ Seq Scan on comments  (cost=8.29..227.29 rows=10 width=42)
+   Filter: (user_id = (InitPlan 1).col1)
+   InitPlan 1
+     ->  Index Only Scan using users_pkey on users  (cost=0.28..8.29 rows=1 width=4)
+           Index Cond: (id = 100)
+(5 rows)
+
+Query Planner first does the InitPlan 1( the inner subquery ) using the Index Only Scan on users table 
+on index condition id=100, then it does the outer query using sequential scan because the no. of rows returned might be less so 
+query planner decided to take the path of sequential scan on comments instead off the index we made on it.
 */
