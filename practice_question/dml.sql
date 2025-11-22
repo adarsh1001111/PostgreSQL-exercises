@@ -21,7 +21,7 @@ INSERT INTO complexes (name, location_id) VALUES
     ('Complex F', 6),
     ('Complex G', 6),
     ('Complex H', 8),
-    ('Complex I', 1),
+    ('Complex I', 3),
     ('Complex J', 10)
 RETURNING *;
 
@@ -53,12 +53,7 @@ INSERT INTO memberships (member_id, complex_id, type) VALUES
         (1, 2, 'active'),
         (2, 3, 'inactive'),
         (3, 4, 'active'),
-        (4, 5, 'active'),
-        (6, 4, 'inactive'),
-        (7, 5, 'active'),
-        (8, 6, 'active'),
-        (9, 2, 'active'),
-        (10,5, 'inactive')
+        (4, 5, 'active')
 RETURNING *; 
 
 INSERT INTO sports (name) VALUES
@@ -69,7 +64,8 @@ INSERT INTO sports (name) VALUES
     ('Cricket'),
     ('Basketball'),
     ('Table Tennis'),
-    ('Squash');
+    ('Squash')
+RETURNING *;
 
 
 INSERT INTO complex_sports (complex_id, sport_id) VALUES
@@ -129,5 +125,17 @@ INSERT INTO coachings (complex_id, sport_id) VALUES
 
     (9, 1),
 
-    (10,5)
+    (10, 5),
+    (10, 3)
+RETURNING *;
+
+INSERT INTO trainings(member_id, sport_id, complex_id) VALUES
+    (1, 8, 7),
+    (1, 6, 4),
+    (2, 3, 2),
+    (4, 2, 1),
+    (10,3, 2),
+    (9, 3, 2),
+    (5, 3, 10),
+    (4, 1, 9)
 RETURNING *;
